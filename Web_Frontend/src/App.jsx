@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router";
 import { HomeLayout } from "./pages/HomeLayout";
 import { ContactUs } from "./pages/ContactUs";
-import { AboutUs } from "./pages/AboutUs";
+import { About } from "./pages/AboutUs";
+import { Services } from "./pages/Services.jsx"
 import { Signup } from "./pages/Signup";
 import { Login } from "./pages/Login";
 import { PlatformInfo} from "./pages/PlatformInfo";
@@ -27,9 +28,10 @@ function App() {
           <Route index element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/analytics" element={<AnalyticsDashboard />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="/connect-account" element={<PlatformInfo />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/connect-account" element={<PlatformInfo />} />
           <Route path="/post-calendar" element={<CalendarPage />} />
           <Route path="/posts" element={<PostPage />} />
           <Route path="/posting-schedule" element={<PostingSchedule />} />

@@ -17,7 +17,7 @@ export const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = await signup(inputs);
-    if (success) navigate("/home");
+    if (success) navigate("/analytics");
   };
 
   return (

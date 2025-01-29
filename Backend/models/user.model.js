@@ -1,4 +1,6 @@
+import { hash } from "crypto";
 import mongoose from "mongoose";
+import { stringify } from "querystring";
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -23,7 +25,19 @@ const userSchema = new mongoose.Schema({
     profilePic: {
       type: String,
       default: ""
-    }
+    },
+    posts: {
+      type: [{
+        image: Buffer,
+        caption: String,
+        postTime: Date
+      }],
+      default: []
+    },
+    yourWork: {
+      type: String,
+      required: true
+    },
 },{timestamps:true});
 
 const User = mongoose.model("User",userSchema);

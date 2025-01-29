@@ -6,15 +6,15 @@ export const Sidebar = () => {
   return (
     <div className="w-64 bg-white p-4">
       <div className="flex items-center gap-2 px-2 py-4">
-        <div className="h-8 w-8 rounded-lg bg-indigo-600"></div>
+        {/* <div className="h-8 w-8 rounded-lg bg-indigo-600"></div> */}
         <span className="text-xl font-semibold">Mixpost</span>
       </div>
       
-      <Link to ='/create-post' className="w-full bg-indigo-600 text-white rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-indigo-700">
+      <button className="w-full bg-purple-500 text-white rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-purple-700">
         <Clock className="h-4 w-4" />
         Create Post
-      </Link>
-      
+      </button>
+
       <nav className="mt-8 space-y-1">
         <NavItem to="/analytics" icon={<LayoutDashboard className="h-4 w-4" />}>
           Dashboard
@@ -60,7 +60,7 @@ const NavItem = ({ to, icon, children }) => {
       to={to}
       className={`flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium ${
         isActive 
-          ? "bg-indigo-50 text-indigo-600" 
+          ? "bg-indigo-50 text-purple-500" 
           : "text-gray-700 hover:bg-gray-100"
       }`}
     >

@@ -5,11 +5,13 @@ import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Slide from '@mui/material/Slide';
+
 
 const style = {
   position: 'absolute',
-  top: '50%',
-  left: '50%',
+  top: '30%',
+  left: '40%',
   transform: 'translate(-50%, -50%)',
   width: 400,
   bgcolor: 'background.paper',
@@ -18,14 +20,11 @@ const style = {
   p: 4,
 };
 
-export function CreatePost() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
+export function CreatePost({setOpen, open}) {
   const handleClose = () => setOpen(false);
 
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -39,7 +38,7 @@ export function CreatePost() {
           },
         }}
       >
-        <Fade in={open}>
+        <Slide direction="left" in={open} mountOnEnter unmountOnExit>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Text in a modal
@@ -48,7 +47,7 @@ export function CreatePost() {
               Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
             </Typography>
           </Box>
-        </Fade>
+        </Slide>
       </Modal>
     </div>
   );

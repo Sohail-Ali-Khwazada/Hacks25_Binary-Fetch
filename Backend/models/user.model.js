@@ -23,7 +23,20 @@ const userSchema = new mongoose.Schema({
     profilePic: {
       type: String,
       default: ""
-    }
+    },
+    posts: {
+      type: [{
+        image: String,
+        caption: String,
+        postTime: Date,
+        status: {
+          type: String,
+          enum: ["scheduled", "published"],
+          default: "scheduled"
+        }
+      }],
+      default: []
+    },
 },{timestamps:true});
 
 const User = mongoose.model("User",userSchema);

@@ -226,41 +226,10 @@ const uploadImage = async (imageBuffer) => {
 };
 
 
-// const postPost = async (req, res) => {
-//   const postText = `Check out this AI-generated futuristic cityscape! 🌆\n\n${hashtagString}`;
-
-
-//   const image = await ImageModel.findOne({ name: "generated_image" });
-
-//   if (!image) {
-//     console.log("Image not found in database.");
-//     return;
-//   }
-
-  
-//   const uploadResponse = await uploadImage(image.data);
-//   console.log("Image uploaded to Bluesky", uploadResponse);
-
-//   const blobRef = {
-//     $type: "blob",
-//     ref: uploadResponse.blob.ref,
-//     mimeType: uploadResponse.blob.mimeType,
-//     size: uploadResponse.blob.size,
-//   };
-
-//   console.log("Image uploaded, creating post...");
-
-//   await agent.post({
-//     text: postText,
-//     embed: {
-//       $type: "app.bsky.embed.images",
-//       images: [
-//         {
-//           image: blobRef,
-//           alt: "A futuristic cityscape generated using AI",
-//         },
-//       ],
-//     },
-//     createdAt: new Date().toISOString(),
-//   });
-// }
+export const getPost=async(req, res)=>{
+  const user = req.user;
+  console.log('User:',user);
+  const userRecord = await User.findById(user._id).select("posts");
+  const posts = userRecord.posts;
+  res.json(posts);
+}

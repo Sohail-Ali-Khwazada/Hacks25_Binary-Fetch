@@ -29,7 +29,12 @@ const userSchema = new mongoose.Schema({
       type: [{
         image: String,
         caption: String,
-        postTime: Date
+        postTime: Date,
+        status: {
+          type: String,
+          enum: ["scheduled", "published"],
+          default: "scheduled"
+        }
       }],
       default: []
     },

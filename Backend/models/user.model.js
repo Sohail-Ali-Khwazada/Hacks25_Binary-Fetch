@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     },
     posts: {
       type: [{
-        image: Buffer,
+        image: String,
         caption: String,
         postTime: Date
       }],

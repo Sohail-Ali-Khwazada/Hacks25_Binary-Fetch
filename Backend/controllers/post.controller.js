@@ -2,6 +2,8 @@ import { HfInference } from "@huggingface/inference";
 import ImageModel from "../models/image.model.js";
 import { BskyAgent } from "@atproto/api";
 import User from "../models/user.model.js";
+import fs from 'fs';
+import path from 'path';
 
 export const postHandler = async (req, res) => {
   const { brandsWork, monthlyDescription, occasion, dateAndTime } = req.body;
@@ -14,14 +16,25 @@ export const postHandler = async (req, res) => {
     return res.status(400).json({ error: "Invalid date format" });
   }
 
-  const {postCaption, imageGenerationPrompt} = await captionGenerator(brandsWork, monthlyDescription, occasion, dateAndTime);
+  const {postCaption} = await captionGenerator(brandsWork, monthlyDescription, occasion, dateAndTime);
   // console.log("Post Caption:", postCaption);
   // console.log("Image Generation Prompt:", imageGenerationPrompt);
+
+  const imageGenerationPrompt = `
+  Create a visually stunning, high-quality image for a professional social media post that aligns with the following details:
+  **Theme:** ${monthlyDescription}
+  **Occasion:** ${occasion}
+  **Brand Identity:** ${brandsWork}  
+  **Text Overlay:** "Trending Now | ${occasion} | ${brandsWork}"
+`;
   const imageBuffer = await generateImage(imageGenerationPrompt);
+
+  const imagePath = await saveImageLocally(imageBuffer);
+
   console.log("Image Buffer:", imageBuffer);
 
   const newPost = {
-    image: imageBuffer,
+    image: imagePath,
     caption: postCaption,
     postTime: postTime,
   };
@@ -39,6 +52,20 @@ export const postHandler = async (req, res) => {
     console.error("Error saving post:", err);
     res.status(500).json({ error: "Failed to create post" });
   }
+};
+
+const saveImageLocally = async (imageBuffer) => {
+  const uploadDir = path.join(process.cwd(), 'uploads'); // Define the directory where images will be saved
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true }); // Create the directory if it doesn't exist
+  }
+
+  const randomFilename = `image_${Date.now()}_${Math.floor(Math.random() * 1000)}.jpg`; // Generate a random filename
+  const filePath = path.join(uploadDir, randomFilename);
+
+  fs.writeFileSync(filePath, imageBuffer); // Save the image buffer to the file
+
+  return filePath; // Return the file path
 };
 
 const captionGenerator = async (
@@ -67,27 +94,7 @@ const captionGenerator = async (
 
   const postCaption = await GeminiResponse(textGenerationPrompt);
 
-  // **Image Generation Prompt**
-  const imageGenerationPrompt = `
-        Create a visually stunning, high-quality image for a professional social media post.
-        - Theme: ${monthlyDescription}
-        - Occasion: ${occasion}
-        - Brand Identity: ${brandsWork}
-        - Style: Modern, vibrant, eye-catching
-        - Relevance: Align with ongoing trends (e.g., Maha Kumbh, cultural events, or seasonal themes)
-        - Emotions: Evoke inspiration, excitement, and connection
-        - Colors: Bold and engaging, optimized for social media visibility
-        - Text Overlay: "Trending Now | ${occasion} | ${brandsWork}"
-        - Aspect Ratio: Optimized for Instagram & LinkedIn (1080x1350)
-        - Format: High-resolution digital artwork, professional lighting
-
-        Example:
-        "A breathtaking image of the Maha Kumbh festival with a golden sunrise, sacred waters reflecting divine colors, and people performing rituals—capturing the essence of spirituality and tradition."
-  `;
-
-  const imgPrompt = await GeminiResponse(imageGenerationPrompt);
-  // console.log('Image Generation Prompt:', imgPrompt);
-  return { postCaption, imageGenerationPrompt: imgPrompt };
+  return { postCaption };
 };
 
 
@@ -123,15 +130,15 @@ const generateImage = async (imageGenerationPrompt) => {
     inputs: imageGenerationPrompt,
     // parameters: { num_inference_steps: 5 },
     parameters: {
-      num_inference_steps: 50, // Match Hugging Face defaults
-      guidance_scale: 7.5,     // Match Hugging Face defaults
+      num_inference_steps: 100, // Match Hugging Face defaults
+      guidance_scale: 15,     // Match Hugging Face defaults
       seed: 42,                // Optional: Set a fixed seed for reproducibility
-      // negative_prompt: "blurry, low quality, distorted, unrealistic, text, watermark",
+      negative_prompt: "blurry, low quality, distorted, unrealistic, text, watermark",
       // target_size: {
       //   width: 768, // Adjust resolution
       //   height: 768,
       // },
-      // scheduler: "DPMSolverMultistep", // Match Hugging Face defaults
+      scheduler: "DPMSolverMultistep", // Match Hugging Face defaults
     },
     provider: "hf-inference",
   });
@@ -139,7 +146,6 @@ const generateImage = async (imageGenerationPrompt) => {
   const buffer = await imageBlob.arrayBuffer();
   const imageBuffer = Buffer.from(buffer);
   return imageBuffer;
-
 };
 
 export const submitPost = async (req, res) => {
@@ -162,16 +168,13 @@ export const submitPost = async (req, res) => {
 
     const { caption, image, postTime } = post;
     
-    // // Detailed image validation
-    if (!image) {
-      console.log("Image object is completely missing");
-      return res.status(400).json({ error: "Image object is missing" });
-    }
+    const imageBuffer = fs.readFileSync(image);
+
 
 
 
     console.log("Uploading image to Bluesky...");
-    const uploadResponse = await uploadImage(image);
+    const uploadResponse = await uploadImage(imageBuffer);
     console.log("Image uploaded to Bluesky", uploadResponse);
 
     const blobRef = {

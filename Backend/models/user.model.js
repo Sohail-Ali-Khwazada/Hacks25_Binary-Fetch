@@ -1,3 +1,4 @@
+import { hash } from "crypto";
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
@@ -23,7 +24,15 @@ const userSchema = new mongoose.Schema({
     profilePic: {
       type: String,
       default: ""
-    }
+    },
+    posts: {
+      type: [{
+        image: Buffer,
+        caption: String,
+        postTime: Date
+      }],
+      default: []
+    },
 },{timestamps:true});
 
 const User = mongoose.model("User",userSchema);

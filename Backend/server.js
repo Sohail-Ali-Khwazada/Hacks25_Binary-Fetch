@@ -4,7 +4,7 @@ import cors from "cors";
 import connectDb from "./db/db_connect.js";
 
 import authRoutes from "./routes/auth.route.js"
-
+import postRoutes from "./routes/post.route.js"
 
 
 const app = express();
@@ -15,7 +15,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(cors());
 
 app.use("/api/auth",authRoutes);
-
+app.use("/api/post", postRoutes);
 
 app.get("/",(req,res)=>{
   res.json({message: "Hello world"});

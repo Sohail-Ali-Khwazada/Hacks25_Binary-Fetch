@@ -4,7 +4,7 @@ import { Clock, LayoutDashboard, Calendar, Image, FileText, Users } from 'lucide
 
 export const Sidebar = () => {
   return (
-    <div className="w-64 bg-white p-4">
+    <div className="w-64 bg-white p-4 min-h-screen">
       <div className="flex items-center gap-2 px-2 py-4">
         {/* <div className="h-8 w-8 rounded-lg bg-indigo-600"></div> */}
         <span className="text-xl font-semibold">Postify</span>

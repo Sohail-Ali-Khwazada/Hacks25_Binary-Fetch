@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { stringify } from "querystring";
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -36,6 +37,10 @@ const userSchema = new mongoose.Schema({
         }
       }],
       default: []
+    },
+    yourWork: {
+      type: String,
+      required: true
     },
 },{timestamps:true});
 

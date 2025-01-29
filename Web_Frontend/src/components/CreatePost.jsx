@@ -1,54 +1,153 @@
-import * as React from 'react';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Slide from '@mui/material/Slide';
+import { useState } from "react";
+import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Slide from "@mui/material/Slide";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { festivals } from "../store/festivals_data";
 
 
-const style = {
-  position: 'absolute',
-  top: '30%',
-  left: '40%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
+
+
+const modalStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
-export function CreatePost({setOpen, open}) {
+const boxStyle = {
+  width: 420,
+  bgcolor: "#f5f5f5", // Light gray background for better contrast
+  borderRadius: "12px",
+  boxShadow: 24,
+  p: 4,
+  border: "none",
+  outline: "none",
+  zIndex: 10,
+};
+
+export function CreatePost({ setOpen, open }) {
+  const [monthlyGoal, setMonthlyGoal] = useState("");
+  const [specialDates, setSpecialDates] = useState([]);
+  const [fest, setFest] = useState([]);
+
+
   const handleClose = () => setOpen(false);
 
+  const handleAddSpecialDate = () => {
+    setSpecialDates([...specialDates, { date: null, occasion: "" }]);
+  };
+
+  const handleSpecialDateChange = (index, field, value) => {
+    const newSpecialDates = [...specialDates];
+    newSpecialDates[index][field] = value;
+    setSpecialDates(newSpecialDates);
+  };
+
+  const handleSubmit = () => {
+    
+    let dates = specialDates.map((specialDate) => specialDate.date["$d"]);
+    dates = dates.map((date) => (new Date(date)).toISOString());
+    setSpecialDates(dates);
+    let f = festivals[new Date().toLocaleString('default', { month: 'long' })];
+    f = f.map((fest) => ({...fest, date: (new Date(fest.date)).toISOString()}));
+
+    setFest(f);
+    
+    console.log("Monthly Goal:", monthlyGoal);
+    console.log("Special Dates:", dates);
+
+    console.log("Festivals:", f);
+    handleClose();
+  };
+
   return (
-    <div>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Slide direction="left" in={open} mountOnEnter unmountOnExit>
-          <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
-          </Box>
-        </Slide>
-      </Modal>
-    </div>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{ backdrop: { timeout: 500 } }}
+      sx={modalStyle}
+    >
+      <Slide direction="up" in={open} mountOnEnter unmountOnExit>
+        <Box sx={boxStyle}>
+          <Typography
+            variant="h5"
+            fontWeight={600}
+            textAlign="center"
+            sx={{ color: "#AD46FF", mb: 3 }}
+          >
+            Create Monthly Plan
+          </Typography>
+          <TextField
+            fullWidth
+            label="Monthly Goal"
+            variant="outlined"
+            value={monthlyGoal}
+            onChange={(e) => setMonthlyGoal(e.target.value)}
+            sx={{ mb: 3 }}
+          />
+          <Typography variant="subtitle1" sx={{ mb: 1, color: "#AD46FF", fontWeight: 600 }}>
+            Special Dates
+          </Typography>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            {specialDates.map((specialDate, index) => (
+              <Box key={index} sx={{ display: "flex", gap: 2, mb: 2 }}>
+                <DatePicker
+                  label="Date"
+                  value={specialDate.date ? dayjs(specialDate.date) : null}
+                  onChange={(newValue) => handleSpecialDateChange(index, "date", newValue)}
+                  renderInput={(params) => <TextField {...params} fullWidth />}
+                />
+                <TextField
+                  label="Occasion"
+                  value={specialDate.occasion}
+                  onChange={(e) => handleSpecialDateChange(index, "occasion", e.target.value)}
+                  fullWidth
+                />
+              </Box>
+            ))}
+          </LocalizationProvider>
+          <Button
+            onClick={handleAddSpecialDate}
+            fullWidth
+            sx={{
+              backgroundColor: "#AD46FF",
+              color: "white",
+              borderRadius: "8px",
+              mb: 2,
+              "&:hover": {
+                backgroundColor: "#9B3DE0",
+              },
+            }}
+          >
+            + Add Special Date
+          </Button>
+          <Button
+            fullWidth
+            onClick={handleSubmit}
+            sx={{
+              backgroundColor: "#AD46FF",
+              color: "white",
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#9B3DE0",
+              },
+            }}
+          >
+            Generate
+          </Button>
+        </Box>
+      </Slide>
+    </Modal>
   );
 }

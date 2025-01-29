@@ -4,8 +4,8 @@ import cors from "cors";
 import connectDb from "./db/db_connect.js";
 
 import authRoutes from "./routes/auth.route.js"
-import { startAgenda } from './agenda.js';
 import postRoutes from "./routes/post.route.js"
+import { startAgenda } from './agenda.js';
 
 
 const app = express();

@@ -1,11 +1,11 @@
 import { HfInference } from "@huggingface/inference";
 import ImageModel from "../models/image.model.js";
-import { BskyAgent } from "@atproto/api";
 import User from "../models/user.model.js";
 import fs from 'fs';
 import path from 'path';
 import Task from "../models/task.model.js";
 import { agenda } from "../agenda.js";  
+import { BskyAgent } from "@atproto/api";
 
 export const addTask = async (req, res) => {
   const { title, scheduleDate } = req.body;

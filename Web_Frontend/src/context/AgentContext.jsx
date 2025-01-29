@@ -23,7 +23,7 @@ export const AgentContextProvider = ({children}) => {
   const isLoggedin_BlueSky = () => {
     return agent.session !== null && agent.session !== undefined;
   };
-
+  console.log(agent);
   
   return <AgentContext.Provider value={{agent,connect,isLoggedin_BlueSky}}>
     {children}

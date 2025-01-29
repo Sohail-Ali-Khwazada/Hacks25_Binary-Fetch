@@ -16,7 +16,7 @@ function useLogin() {
     setLoading(true);
 
     try{
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URI}/api/auth/login`,{
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,{
         method: "Post",
         headers: {"Content-Type" : "application/json"},
         body: JSON.stringify({username,password}),

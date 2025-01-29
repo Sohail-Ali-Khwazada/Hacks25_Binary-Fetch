@@ -4,6 +4,8 @@ import cors from "cors";
 import connectDb from "./db/db_connect.js";
 
 import authRoutes from "./routes/auth.route.js"
+import postRoutes from "./routes/post.routes.js"
+import { startAgenda } from './agenda.js';
 
 
 
@@ -15,13 +17,15 @@ app.use(express.urlencoded({extended: false}));
 app.use(cors());
 
 app.use("/api/auth",authRoutes);
+app.use("/api/posts",postRoutes);
 
 
 app.get("/",(req,res)=>{
   res.json({message: "Hello world"});
 })
 
-app.listen(PORT,()=>{
+app.listen(PORT,async ()=>{
   connectDb();
   console.log(`Server is running on port ${PORT}`);
+  await startAgenda();
 })

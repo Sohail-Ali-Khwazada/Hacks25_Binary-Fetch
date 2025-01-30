@@ -34,7 +34,7 @@ const boxStyle = {
   zIndex: 10,
 };
 
-export function CreatePost({ setOpen, open }) {
+export function MonthlyPost({ setOpen, open }) {
   const [monthlyGoal, setMonthlyGoal] = useState("");
   const [specialDates, setSpecialDates] = useState([]);
   const [fest, setFest] = useState([]);

@@ -44,7 +44,7 @@ export const PostPage = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/post/get-posts`,
+        `http://localhost:3000/api/posts/get-posts`,
         {
           method: "GET",
           headers: {

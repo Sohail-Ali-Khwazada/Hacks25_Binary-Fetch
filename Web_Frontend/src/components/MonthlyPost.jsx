@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -11,6 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { festivals } from "../store/festivals_data";
+import { useAuthContext } from "../context/AuthContext";
 
 
 
@@ -32,10 +33,11 @@ const boxStyle = {
   zIndex: 10,
 };
 
-export function CreatePost({ setOpen, open }) {
+export function MonthlyPost({ setOpen, open }) {
   const [monthlyGoal, setMonthlyGoal] = useState("");
   const [specialDates, setSpecialDates] = useState([]);
   const [fest, setFest] = useState([]);
+  const {authToken} = useAuthContext();
 
 
   const handleClose = () => setOpen(false);
@@ -50,7 +52,7 @@ export function CreatePost({ setOpen, open }) {
     setSpecialDates(newSpecialDates);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     
     let dates = specialDates.map((specialDate) => specialDate.date["$d"]);
     dates = dates.map((date) => (new Date(date)).toISOString());
@@ -64,6 +66,21 @@ export function CreatePost({ setOpen, open }) {
     console.log("Special Dates:", dates);
 
     console.log("Festivals:", f);
+
+    // API call to post data
+    const response = await fetch("http://localhost:3000/api/posts/monthly-data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({  
+        monthlyGoal,
+        specialDates: dates,
+        fest: f,
+      }),
+    });
+    const data = await response.json();
     handleClose();
   };
 

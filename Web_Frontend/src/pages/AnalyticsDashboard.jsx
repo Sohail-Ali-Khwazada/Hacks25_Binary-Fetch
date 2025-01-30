@@ -94,9 +94,9 @@ export  function AnalyticsDashboard() {
       <Card sx={{ mb: 4, p: 2, boxShadow: 3 }}>
         <CardHeader title="Connected Accounts" />
         <CardContent sx={{ display: "flex", gap: 2 }}>
-          <ConnectedAccount platform="tumblr" login_flag={login_flag_BS} to={login_flag_BS ? "https://www.tumblr.com" : "/connect-account"}/>
+          <ConnectedAccount platform="tumblr" login_flag={login_flag_BS} to={"https://www.tumblr.com"}/>
           <ConnectedAccount platform="Blue Sky" login_flag={login_flag_BS} to={login_flag_BS ? "https://bsky.app" : "/connect-account"}/>
-          <ConnectedAccount platform="X" login_flag={login_flag_BS} to={login_flag_BS ? "https://x.com" : "/connect-account"}/>
+          <ConnectedAccount platform="X" login_flag={login_flag_BS} to={"https://x.com"}/>
         </CardContent>
       </Card>
 

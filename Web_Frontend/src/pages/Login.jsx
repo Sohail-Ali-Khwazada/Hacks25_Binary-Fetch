@@ -21,7 +21,7 @@ export const Login = () => {
          }}>
       <div className="md:w-1/3 border-2 border-[#6F4DF7] rounded-xl p-6 backdrop-blur-lg">
         <h1 className="text-3xl font-semibold text-center text-black">
-          Login <span className="text-purple-500">iConnect</span>
+          Login <span className="text-purple-500">Postify</span>
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">

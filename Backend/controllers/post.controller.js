@@ -32,7 +32,7 @@ export const addTask = async (req, res) => {
 export const handleMonthlyData = async (req, res) => {
   console.log("Monthly Data Received:", req.body);
   const { monthlyGoal, specialDates, fest } = req.body;
-  console.log("Monthly Goal:", monthlyGoal);
+  console.log("Monthly Goal:", monthlyGoal);     
   console.log("Special Dates:", specialDates);
   console.log("Festivals:", fest);
   // console.log("User:", req.user);
@@ -179,12 +179,13 @@ const GeminiResponse = async (prompt) => {
   );
 
   const data = await response.json();
-  let geminiText = data.candidates[0].content.parts[0].text;
+  console.log("Gemini Response:", data);
+  let geminiText = data?.candidates[0].content.parts[0].text;
   return geminiText;
 }
 
 const generateImage = async (imageGenerationPrompt) => {
-  const imgClient = new HfInference("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");
+  const imgClient = new HfInference("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");
 
   const maxRetries = 3; // Maximum number of retries
   let retryCount = 0;
@@ -195,8 +196,8 @@ const generateImage = async (imageGenerationPrompt) => {
         model: "ZB-Tech/Text-to-Image", // More reliable model
         inputs: imageGenerationPrompt,
         parameters: {
-          num_inference_steps: 100, // Reduced steps for faster generation
-          guidance_scale: 15,
+          num_inference_steps: 30, // Reduced steps for faster generation
+          guidance_scale: 5,
           negative_prompt: "blurry, low quality, distorted, unrealistic, text, watermark",
           scheduler: "DPMSolverMultistep",
         },

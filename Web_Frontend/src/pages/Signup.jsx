@@ -29,7 +29,7 @@ export const Signup = () => {
     >
       <div className="md:w-1/3 border-2 border-[#6F4DF7] rounded-xl p-8 backdrop-blur-lg bg-white/10">
         <h1 className="text-3xl font-semibold text-center mb-6">
-          Sign Up <span className="text-purple-500">iConnect</span>
+          Sign Up <span className="text-purple-500">Postify</span>
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">

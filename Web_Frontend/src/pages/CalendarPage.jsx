@@ -10,6 +10,8 @@ import { Paper, Button, Typography } from "@mui/material";
 import xlogo from "../Logo/x.png";
 import skybluelogo from "../Logo/bluesky.png";
 import tumblrlogo from "../Logo/tumblr.png";
+import img1 from "../images/img1.png";
+import img2 from "../images/img2.png";
 
 const locales = {
   "en-US": enUS,
@@ -106,7 +108,7 @@ export const CalendarPage = () => {
         { name: "tumblr", logo: tumblrlogo },
         { name: "bluesky", logo: skybluelogo },
       ],
-      image: "https://via.placeholder.com/150", // Placeholder image for this event
+      image: img1, // Placeholder image for this event
       description:
         "This event discusses strategies for launching your own SaaS product and the steps to start generating revenue immediately.", // Event description
     },
@@ -120,7 +122,7 @@ export const CalendarPage = () => {
         { name: "tumblr", logo: tumblrlogo },
         { name: "bluesky", logo: skybluelogo },
       ],
-      image: "https://via.placeholder.com/150", // Placeholder image for this event
+      image: img2, // Placeholder image for this event
       description:
         "A deep dive into how large companies ensure they have products for every segment of the market and what strategies they employ.", // Event description
     },
@@ -177,7 +179,7 @@ export const CalendarPage = () => {
               src={selectedEvent.image}
               alt="Event"
               style={{
-                width: "100%",
+                width: "200px",
                 height: "auto",
                 marginTop: "1rem",
                 borderRadius: "4px",

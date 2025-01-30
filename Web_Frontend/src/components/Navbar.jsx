@@ -1,15 +1,19 @@
 import React from "react";
+import logo from "../Logo/POSTIFY.png";
+import { Link } from "react-router";
 
 export function Navbar() {
   return (
-    <nav className="bg-purple-500 p-4 shadow-lg">
+    <nav className=" p-4 text-black shadow-lg border-b-2 border-gray-200">
       <div className="container mx-auto flex justify-between items-center">
-        <a href="#" className="text-white text-xl font-bold">POSTIFY</a>
+        {/* Logo with size adjustment */}
+        <img src={logo} alt="POSTIFY" className="w-10 rounded-3xl" />
+
         <ul className="flex space-x-6">
-          <li><a href="http://localhost:5173/analytics" className="text-white hover:text-gray-200">Home</a></li>
-          <li><a href="http://localhost:5173/about" className="text-white hover:text-gray-200">About</a></li>
-          <li><a href="http://localhost:5173/services" className="text-white hover:text-gray-200">Services</a></li>
-          <li><a href="http://localhost:5173/contact" className="text-white hover:text-gray-200">Contact</a></li>
+          <Link to="/analytics" className=" hover:text-gray-200">Home</Link>
+          <Link to="/about" className=" hover:text-gray-200">About</Link>
+          <Link to="/services" className=" hover:text-gray-200">Services</Link>
+          <Link to="/contact" className=" hover:text-gray-200">Contact</Link>
         </ul>
       </div>
     </nav>

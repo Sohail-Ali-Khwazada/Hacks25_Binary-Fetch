@@ -1,13 +1,13 @@
 export const festivals = {
   "January": [
-    {"date": "2025-01-01", "festival": "New Year's Day"},
-    {"date": "2025-01-06", "festival": "Guru Govind Singh Jayanti"},
-    {"date": "2025-01-13", "festival": "Lohri"},
-    {"date": "2025-01-14", "festival": "Pongal"},
+    // {"date": "2025-01-01", "festival": "New Year's Day"},
+    // {"date": "2025-01-06", "festival": "Guru Govind Singh Jayanti"},
+    // {"date": "2025-01-13", "festival": "Lohri"},
+    // {"date": "2025-01-14", "festival": "Pongal"},
     {"date": "2025-01-14", "festival": "Makar Sankranti"},
     {"date": "2025-01-14", "festival": "Hazarat Ali's Birthday"},
     {"date": "2025-01-26", "festival": "Republic Day"},
-    {"date": "2025-01-29", "festival": "Chinese New Year"}
+    // {"date": "2025-01-29", "festival": "Chinese New Year"}
   ],
   "February": [
     {"date": "2025-02-02", "festival": "Vasant Panchami"},

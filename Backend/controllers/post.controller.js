@@ -28,29 +28,68 @@ export const addTask = async (req, res) => {
 };
 
 
+
+export const handleMonthlyData = async (req, res) => {
+  console.log("Monthly Data Received:", req.body);
+  const { monthlyGoal, specialDates, fest } = req.body;
+  console.log("Monthly Goal:", monthlyGoal);
+  console.log("Special Dates:", specialDates);
+  console.log("Festivals:", fest);
+  // console.log("User:", req.user);
+
+
+  const token = req.headers.authorization.split(" ")[1];
+  const brandsWork = "We are a non-profit organization dedicated to providing clean water and sanitation...";
+  console.log("Token:", token);
+  for(let i=0;i<fest.length;i++){
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    const {date,festival} = fest[i];
+
+    const response = await fetch(`http://localhost:3000/api/posts/create-post`, {
+      method: "POST",  
+      headers: {
+        "Content-Type": "application/json",  
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ brandsWork, monthlyDescription: monthlyGoal, festival, dateAndTime: date }),
+    });
+    const data = await response.json();
+    console.log("Response:", data);
+
+    // await agenda.schedule(date, "execute task", { taskId: newTask._id });
+  }
+  res.json({ message: "Data received successfully!" });
+};
+
+
+
 export const postHandler = async (req, res) => {
   const { brandsWork, monthlyDescription, occasion, dateAndTime } = req.body;
   const user = req.user;
-  console.log("User:", user);
-
+  // console.log("User:", user);
+  console.log("Posthandler")
+  
   const postTime = new Date(dateAndTime);
-
+  
   if (isNaN(postTime)) {
     return res.status(400).json({ error: "Invalid date format" });
   }
-
+  
   const {postCaption} = await captionGenerator(brandsWork, monthlyDescription, occasion, dateAndTime);
   // console.log("Post Caption:", postCaption);
   // console.log("Image Generation Prompt:", imageGenerationPrompt);
 
+  
+  
   const imageGenerationPrompt = `
   Create a visually stunning, high-quality image for a professional social media post that aligns with the following details:
   **Theme:** ${monthlyDescription}
   **Occasion:** ${occasion}
   **Brand Identity:** ${brandsWork}  
   **Text Overlay:** "Trending Now | ${occasion} | ${brandsWork}"
-`;
+  `;
   const imageBuffer = await generateImage(imageGenerationPrompt);
+  console.log("Brands Work:", brandsWork);
 
   const imagePath = await saveImageLocally(imageBuffer);
 
@@ -144,32 +183,68 @@ const GeminiResponse = async (prompt) => {
   return geminiText;
 }
 
-
 const generateImage = async (imageGenerationPrompt) => {
-  const imgClient = new HfInference("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");
+  const imgClient = new HfInference("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");
 
-  const imageBlob = await imgClient.textToImage({
-    model: "ZB-Tech/Text-to-Image",
-    inputs: imageGenerationPrompt,
-    // parameters: { num_inference_steps: 5 },
-    parameters: {
-      num_inference_steps: 100, // Match Hugging Face defaults
-      guidance_scale: 15,     // Match Hugging Face defaults
-      seed: 42,                // Optional: Set a fixed seed for reproducibility
-      negative_prompt: "blurry, low quality, distorted, unrealistic, text, watermark",
-      // target_size: {
-      //   width: 768, // Adjust resolution
-      //   height: 768,
-      // },
-      scheduler: "DPMSolverMultistep", // Match Hugging Face defaults
-    },
-    provider: "hf-inference",
-  });
+  const maxRetries = 3; // Maximum number of retries
+  let retryCount = 0;
 
-  const buffer = await imageBlob.arrayBuffer();
-  const imageBuffer = Buffer.from(buffer);
-  return imageBuffer;
+  while (retryCount < maxRetries) {
+    try {
+      const imageBlob = await imgClient.textToImage({
+        model: "ZB-Tech/Text-to-Image", // More reliable model
+        inputs: imageGenerationPrompt,
+        parameters: {
+          num_inference_steps: 100, // Reduced steps for faster generation
+          guidance_scale: 15,
+          negative_prompt: "blurry, low quality, distorted, unrealistic, text, watermark",
+          scheduler: "DPMSolverMultistep",
+        },
+      });
+
+      const buffer = await imageBlob.arrayBuffer();
+      return Buffer.from(buffer);
+    } catch (error) {
+      retryCount++;
+      console.error(`Attempt ${retryCount} failed:`, error.message);
+
+      if (retryCount >= maxRetries) {
+        throw new Error(`Failed after ${maxRetries} attempts: ${error.message}`);
+      }
+
+      // Exponential backoff before retrying
+      const delay = Math.pow(2, retryCount) * 1000; // 2s, 4s, 8s
+      console.log(`Retrying in ${delay / 1000} seconds...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
 };
+
+// const generateImage = async (imageGenerationPrompt) => { 
+//   const imgClient = new HfInference("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");
+
+//   const imageBlob = await imgClient.textToImage({
+//     model: "ZB-Tech/Text-to-Image",
+//     inputs: imageGenerationPrompt,
+//     // parameters: { num_inference_steps: 5 }, 
+//     parameters: {
+//       num_inference_steps: 80, // Match Hugging Face defaults
+//       guidance_scale: 12,     // Match Hugging Face defaults
+//       seed: 42,                // Optional: Set a fixed seed for reproducibility
+//       negative_prompt: "blurry, low quality, distorted, unrealistic, text, watermark",
+//       // target_size: {
+//       //   width: 768, // Adjust resolution
+//       //   height: 768,
+//       // },
+//       scheduler: "DPMSolverMultistep", // Match Hugging Face defaults
+//     },
+//     provider: "hf-inference",
+//   });
+
+//   const buffer = await imageBlob.arrayBuffer();
+//   const imageBuffer = Buffer.from(buffer);
+//   return imageBuffer;
+// };
 
 export const submitPost = async (req, res) => {
   try {

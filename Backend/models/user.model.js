@@ -26,16 +26,12 @@ const userSchema = new mongoose.Schema({
       default: ""
     },
     posts: {
-      type: [{
-        image: String,
-        caption: String,
-        postTime: Date,
-        status: {
-          type: String,
-          enum: ["scheduled", "published"],
-          default: "scheduled"
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Post"
         }
-      }],
+      ],
       default: []
     },
     yourWork: {

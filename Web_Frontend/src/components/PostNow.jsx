@@ -27,32 +27,43 @@ const boxStyle = {
 
 export function PostNow({ setOpen, open }) {
   const [description, setDescription] = useState("");
-  const {authToken} = useAuthContext();
+  const { authToken } = useAuthContext();
 
   const handleClose = () => setOpen(false);
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     console.log("Description:", description);
+    let taskDate = new Date(); // Create a Date object
+    console.log("UTC Time:", taskDate.toISOString()); // Log UTC Time
 
-    const response = await fetch("http://localhost:3000/api/posts/create-post", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({  
-        brandsWork:"cricket bat and ball", 
-        monthlyDescription:description, 
-        occasion:"", 
-        dateAndTime: new Date().toISOString(),
-      }),
-    });
+    // Convert to IST (UTC + 5:30)
+    taskDate.setHours(taskDate.getHours() + 5);
+    taskDate.setMinutes(taskDate.getMinutes() + 30);
+
+    // Format IST in ISO-like format
+    let istTime = taskDate.toISOString().replace("Z", "+05:30");
+    console.log("IST Time:", istTime);
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/posts/create-post`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          brandsWork: "cricket bat and ball",
+          monthlyDescription: description,
+          occasion: "",
+          dateAndTime: istTime,
+        }),
+      }
+    );
     const data = await response.json();
-    console.log(data)
+    console.log(data);
     handleClose();
   };
-
-
 
   return (
     <Modal

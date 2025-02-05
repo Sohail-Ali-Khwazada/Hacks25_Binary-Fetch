@@ -87,15 +87,14 @@ import { Clock, LayoutDashboard, Calendar, FileText, Users } from 'lucide-react'
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import { MonthlyPost } from './MonthlyPost';
 import { PostNow } from './PostNow';
+import { SchedulePost } from './SchedulePost';
 
 export const Sidebar = () => {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
-  const [open, setOpen] = useState(false);
-  const [isPaneOpen, setIsPaneOpen] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [isPaneOpen2, setIsPaneOpen2] = useState(false);
-
+  const [openMonthly, setOpenMonthly] = useState(false);
+  const [openPostNow, setOpenPostNow] = useState(false);
+  const [openSchedule, setOpenSchedule] = useState(false);
 
   return (
     <div className="w-64 bg-white p-4 min-h-screen">
@@ -105,11 +104,7 @@ export const Sidebar = () => {
 
       <button
         className="w-full bg-purple-500 text-white rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-purple-700"
-        onClick={() => {
-          setOpen(true);
-          setIsPaneOpen(true);
-  
-        }}
+        onClick={() => setOpenMonthly(true)}
       >
         <Clock className="h-4 w-4" />
         Monthly Calendar
@@ -117,13 +112,18 @@ export const Sidebar = () => {
       
       <button
         className="w-full bg-purple-500 text-white rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-purple-700 mt-2"
-        onClick={() => {
-          setOpen2(true);
-          setIsPaneOpen2(true);
-        }}
+        onClick={() => setOpenPostNow(true)}
       >
         <Calendar className="h-4 w-4" />
         Post Now
+      </button>
+
+      <button
+        className="w-full bg-purple-500 text-white rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-purple-700 mt-2"
+        onClick={() => setOpenSchedule(true)}
+      >
+        <Calendar className="h-4 w-4" />
+        Schedule Post
       </button>
 
       <nav className="mt-8 space-y-1">
@@ -150,8 +150,9 @@ export const Sidebar = () => {
         </NavGroup>
       </nav>
 
-      <MonthlyPost open={open} setOpen={setOpen} />
-      <PostNow open={open2} setOpen={setOpen2} />
+      <MonthlyPost open={openMonthly} setOpen={setOpenMonthly} />
+      <PostNow open={openPostNow} setOpen={setOpenPostNow} />
+      <SchedulePost open={openSchedule} setOpen={setOpenSchedule} />
     </div>
   );
 };
@@ -174,3 +175,4 @@ const NavItem = ({ to, icon, children, isActive }) => (
     {children}
   </Link>
 );
+

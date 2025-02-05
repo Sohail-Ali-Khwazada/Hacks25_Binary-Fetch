@@ -11,7 +11,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { CalendarPage } from "./pages/CalendarPage";
 import { PostingSchedule } from "./pages/PostingSchedule";
 import { PostPage } from "./pages/PostPage";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+// import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AnalyticsDashboard } from "./pages/AnalyticsDashboard";
 import { CreatePostPage } from "./pages/CreatePostPage";
 import { AgentContextProvider } from "./context/AgentContext";

@@ -1,6 +1,5 @@
 import Agenda from "agenda";
 import Post from "./models/post.model.js";
-import Task from "./models/task.model.js";
 
 // Connect to MongoDB
 export const agenda = new Agenda({
@@ -17,11 +16,17 @@ agenda.define("Post", async (job) => {
     return;
   }
   console.log(`Executing task: ${post.caption}`);
+  const isUpload = await uploadPostOnScheduledTime(post);
 
   // Optionally update the task status after execution
-  const updatedPost = await Post.findByIdAndUpdate(postId, { status: "completed" });
-  console.log("Updated Post in Agenda.js : ", updatedPost);
-
+  if (isUpload) {
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { status: "completed" },
+      { new: true }
+    );
+    console.log("Updated Post in Agenda.js : ", updatedPost);
+  }
 });
 
 // Function to start Agenda
@@ -36,9 +41,9 @@ export const startAgenda = async () => {
   // });
 };
 
-
 // Your function to execute
-function runYourFunction(task) {
-  console.log(`🚀 Running function for task: ${task.title}`);
-  // Your actual function logic goes here (e.g., sending email, notification, etc.)
+async function uploadPostOnScheduledTime(post) {
+  console.log(`🚀 Running function for task: ${post.caption}`);
+  console.log(post);
+  return true;
 }

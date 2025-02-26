@@ -14,6 +14,7 @@ export const AgentContextProvider = ({children}) => {
   });
 
   const connect = async (username, password) => {
+    console.log("account login started")
     return agent.login({
       identifier: username,
       password: password,

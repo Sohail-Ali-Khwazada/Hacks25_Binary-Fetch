@@ -113,14 +113,11 @@ export const postHandler = async (req, res) => {
 
 export const submitPost = async (req, res) => {
   try {
-    const { postId } = req.params;
-    const user = req.user;
-
+    const { postId } = req.params
     // Login to Bluesky first
     await login();
     console.log("user logged in SkyBlue");
 
-    const userRecord = await User.findById(user._id).select("posts");
     const post = userRecord.posts.find(post => post._id.toString() === postId);
 
     if (!post) {

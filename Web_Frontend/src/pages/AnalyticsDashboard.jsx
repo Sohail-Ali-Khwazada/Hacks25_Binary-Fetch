@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, Typography, Avatar, Box } from "@mui/mat
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { useAuthContext } from "../context/AuthContext";
-import { Link } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { useAgentContext } from "../context/AgentContext";
 
 // Register Chart.js components
@@ -31,19 +31,47 @@ const MetricCard = ({ title, value }) => (
 );
 
 // Connected accounts component
-const ConnectedAccount = ({ platform,login_flag, to}) => (
-  <Link to={to}>
-  <Card sx={{ display: "flex", alignItems: "center", p: 2, boxShadow: 2 }}>
-    <Avatar sx={{ mr: 2 }} src={`https://api.dicebear.com/7.x/initials/svg?seed=${platform}`} />
-    <div>
-      <Typography variant="subtitle1">{platform}</Typography>
-      <Typography variant="body2" color="textSecondary">
-        {login_flag ? "Connected" : "Not connected"}
-      </Typography>
-    </div>
-  </Card>
-  </Link>
-);
+// const ConnectedAccount = ({ platform,login_flag, to}) => (
+//   <Link to={to}>
+//   <Card sx={{ display: "flex", alignItems: "center", p: 2, boxShadow: 2 }}>
+//     <Avatar sx={{ mr: 2 }} src={`https://api.dicebear.com/7.x/initials/svg?seed=${platform}`} />
+//     <div>
+//       <Typography variant="subtitle1">{platform}</Typography>
+//       <Typography variant="body2" color="textSecondary">
+//         {login_flag ? "Connected" : "Not connected"}
+//       </Typography>
+//     </div>
+//   </Card>
+//   </Link>
+// );
+const ConnectedAccount = ({ platform, login_flag, to }) => {
+  const navigate = useNavigate();
+  const handleClick = (event) => {
+    if (login_flag) {
+      window.open(to, "_blank", "noopener,noreferrer");
+    }else{
+      navigate("/connect-account");
+    }
+    
+  };
+
+  return (
+    <Card 
+      sx={{ display: "flex", alignItems: "center", p: 2, boxShadow: 2, cursor: login_flag ? "default" : "pointer" }}
+      onClick={handleClick}
+    >
+      <Avatar sx={{ mr: 2 }} src={`https://api.dicebear.com/7.x/initials/svg?seed=${platform}`} />
+      <div>
+        <Typography variant="subtitle1">{platform}</Typography>
+        <Typography variant="body2" color="textSecondary">
+          {login_flag ? "Connected" : "Not connected"}
+        </Typography>
+      </div>
+    </Card>
+  );
+};
+
+
 
 export  function AnalyticsDashboard() {
   const {authUser} = useAuthContext();

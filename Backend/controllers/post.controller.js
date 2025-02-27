@@ -2,8 +2,8 @@ import { HfInference } from "@huggingface/inference";
 import ImageModel from "../models/image.model.js";
 import { BskyAgent } from "@atproto/api";
 import User from "../models/user.model.js";
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 export const postHandler = async (req, res) => {
   const { brandsWork, monthlyDescription, occasion, dateAndTime } = req.body;
@@ -16,7 +16,12 @@ export const postHandler = async (req, res) => {
     return res.status(400).json({ error: "Invalid date format" });
   }
 
-  const {postCaption} = await captionGenerator(brandsWork, monthlyDescription, occasion, dateAndTime);
+  const { postCaption } = await captionGenerator(
+    brandsWork,
+    monthlyDescription,
+    occasion,
+    dateAndTime
+  );
   // console.log("Post Caption:", postCaption);
   // console.log("Image Generation Prompt:", imageGenerationPrompt);
 
@@ -39,28 +44,29 @@ export const postHandler = async (req, res) => {
     postTime: postTime,
   };
 
-  try{
+  try {
     await User.findByIdAndUpdate(
-      user._id,  // Assuming user._id is the logged-in user's ID
-      { $push: { posts: newPost } },  // Add new post to the posts array
-      { new: true }  // Return the updated document
+      user._id, // Assuming user._id is the logged-in user's ID
+      { $push: { posts: newPost } }, // Add new post to the posts array
+      { new: true } // Return the updated document
     );
 
     res.json({ msg: "Post created successfully!" });
-  }
-  catch(err){
+  } catch (err) {
     console.error("Error saving post:", err);
     res.status(500).json({ error: "Failed to create post" });
   }
 };
 
 const saveImageLocally = async (imageBuffer) => {
-  const uploadDir = path.join(process.cwd(), 'uploads'); // Define the directory where images will be saved
+  const uploadDir = path.join(process.cwd(), "uploads"); // Define the directory where images will be saved
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true }); // Create the directory if it doesn't exist
   }
 
-  const randomFilename = `image_${Date.now()}_${Math.floor(Math.random() * 1000)}.jpg`; // Generate a random filename
+  const randomFilename = `image_${Date.now()}_${Math.floor(
+    Math.random() * 1000
+  )}.jpg`; // Generate a random filename
   const filePath = path.join(uploadDir, randomFilename);
 
   fs.writeFileSync(filePath, imageBuffer); // Save the image buffer to the file
@@ -92,11 +98,29 @@ const captionGenerator = async (
         "As the sacred waters of the Maha Kumbh cleanse the soul, let our journey cleanse the spirit of innovation! ✨ Embracing tradition while shaping the future. #MahaKumbh2025 #TimelessTradition #InnovationMeetsCulture"
   `;
 
-  const postCaption = await GeminiResponse(textGenerationPrompt);
+  // const postCaption = await GeminiResponse(textGenerationPrompt);
 
-  return { postCaption };
+  try {
+    const textClient = new HfInference("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");
+    const response = await textClient.textGeneration({
+      model: "mistralai/Mistral-7B-Instruct-v0.2",
+      inputs: textGenerationPrompt,
+      parameters: {
+        max_new_tokens: 200,
+        temperature: 0.7,
+        top_p: 0.95,
+        repetition_penalty: 1.15,
+        do_sample: true,
+      },
+    });
+
+    const postCaption = response.generated_text.trim();
+    return { postCaption };
+  } catch (error) {
+    console.error("Error generating caption:", error);
+    throw new Error("Failed to generate caption");
+  }
 };
-
 
 const GeminiResponse = async (prompt) => {
   const response = await fetch(
@@ -119,8 +143,7 @@ const GeminiResponse = async (prompt) => {
   const data = await response.json();
   let geminiText = data.candidates[0].content.parts[0].text;
   return geminiText;
-}
-
+};
 
 const generateImage = async (imageGenerationPrompt) => {
   const imgClient = new HfInference("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");
@@ -131,9 +154,10 @@ const generateImage = async (imageGenerationPrompt) => {
     // parameters: { num_inference_steps: 5 },
     parameters: {
       num_inference_steps: 100, // Match Hugging Face defaults
-      guidance_scale: 15,     // Match Hugging Face defaults
-      seed: 42,                // Optional: Set a fixed seed for reproducibility
-      negative_prompt: "blurry, low quality, distorted, unrealistic, text, watermark",
+      guidance_scale: 15, // Match Hugging Face defaults
+      seed: 42, // Optional: Set a fixed seed for reproducibility
+      negative_prompt:
+        "blurry, low quality, distorted, unrealistic, text, watermark",
       // target_size: {
       //   width: 768, // Adjust resolution
       //   height: 768,
@@ -158,20 +182,18 @@ export const submitPost = async (req, res) => {
     console.log("user logged in SkyBlue");
 
     const userRecord = await User.findById(user._id).select("posts");
-    const post = userRecord.posts.find(post => post._id.toString() === postId);
+    const post = userRecord.posts.find(
+      (post) => post._id.toString() === postId
+    );
 
     if (!post) {
       console.log("Post not found for ID:", postId);
       return res.status(404).json({ error: "Post not found" });
     }
 
-
     const { caption, image, postTime } = post;
-    
+
     const imageBuffer = fs.readFileSync(image);
-
-
-
 
     console.log("Uploading image to Bluesky...");
     const uploadResponse = await uploadImage(imageBuffer);
@@ -181,26 +203,28 @@ export const submitPost = async (req, res) => {
       $type: "blob",
       ref: uploadResponse.blob.ref,
       mimeType: uploadResponse.blob.mimeType,
-      size: uploadResponse.blob.size
+      size: uploadResponse.blob.size,
     };
 
     await agent.post({
       text: caption,
       embed: {
         $type: "app.bsky.embed.images",
-        images: [{
-          alt: "Posted image",
-          image: blobRef
-        }]
-      }
+        images: [
+          {
+            alt: "Posted image",
+            image: blobRef,
+          },
+        ],
+      },
     });
 
     res.json({ msg: "Post created successfully!" });
   } catch (error) {
     console.error("Error in submitPost:", error);
-    res.status(500).json({ 
-      error: "Failed to submit post", 
-      details: error.message 
+    res.status(500).json({
+      error: "Failed to submit post",
+      details: error.message,
     });
   }
 };
@@ -208,7 +232,6 @@ export const submitPost = async (req, res) => {
 const agent = new BskyAgent({
   service: "https://bsky.social",
 });
-
 
 const login = async () => {
   await agent.login({
@@ -225,11 +248,10 @@ const uploadImage = async (imageBuffer) => {
   return response.data;
 };
 
-
-export const getPost=async(req, res)=>{
+export const getPost = async (req, res) => {
   const user = req.user;
-  console.log('User:',user);
+  console.log("User:", user);
   const userRecord = await User.findById(user._id).select("posts");
   const posts = userRecord.posts;
   res.json(posts);
-}
+};
